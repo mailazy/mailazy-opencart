@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+  <name>Mailazy</name>
+  <code>mailazy</code>
+  <version>1.1</version>
+  <author>Mailazy Team</author>
+  <file path="admin/view/template/setting/setting.twig">
+    <operation>
+      <search><![CDATA[{% if config_mail_engine == 'mail' %}]]></search>
+      <add position="before"><![CDATA[
+      
+        {% if config_mail_engine == 'mailazy' %}
+                      
+            <option value="mailazy" selected="selected">{{ text_mailazy }}</option>
+                      
+        {% else %}
+                      
+            <option value="mailazy">{{ text_mailazy }}</option>
+                      
+        {% endif %}
+      
+      
+      ]]></add>
+    </operation>
+	<operation>
+      <search><![CDATA[<select name="config_mail_engine" id="input-mail-engine" class="form-control">]]></search>
+      <add position="before"><![CDATA[
+	  
+		<div class="text-info">{{ help_mailazy_api_key }}</div>
+	  <script>
+	  function selectMailazyOption(value){
+		if(value == 'mailazy'){
+			jQuery('#input-mail-parameter,#input-mail-smtp-hostname,#input-mail-smtp-port,#input-mail-smtp-timeout').parents('.form-group').attr('style','display:none');
+		}else{
+			jQuery('#input-mail-parameter,#input-mail-smtp-hostname,#input-mail-smtp-port,#input-mail-smtp-timeout').parents('.form-group').removeAttr('style');
+		}
+		}
+	  setTimeout(function(){
+			selectMailazyOption(jQuery('#input-mail-engine').val());
+			jQuery('#input-mail-engine').change(function(){
+				selectMailazyOption(this.value);
+			});
+		},2000);</script>
+	  ]]></add>
+    </operation>
+  </file>
+  <file path="admin/language/*/setting/setting.php">
+    <operation>
+      <search><![CDATA[$_['text_mail']                      = 'Mail';]]></search>
+      <add position="after"><![CDATA[
+	  
+		$_['text_mailazy']              		 = 'Mailazy';
+		$_['help_mailazy_api_key']              = '<strong>IMPORTANT</strong>: When using the Mailazy Engine your API Key should be saved in the <u>SMTP Username</u> and API Secret in the <u>SMTP Password</u> field. No other parameters are required. Ensure that your API key is correct and your Mailazy account is properly configured or the send will fail.';
+	  
+	  ]]></add>
+    </operation>
+  </file>
+  <file path="catalog/controller/information/contact.php">
+    <operation>
+      <search><![CDATA[$mail->setFrom($this->request->post['email']);]]></search>
+      <add position="after"><![CDATA[
+
+		$mail->setFrom($this->config->get('config_email'));
+
+	  ]]></add>
+    </operation>
+  </file>
+</modification>
